@@ -1,0 +1,36 @@
+{
+  "name": "@kohapi/generator",
+  "version": "0.0.1-alpha.3",
+  "description": "A auto code generator.",
+  "main": "index.js",
+  "bin": {
+    "kohapi-generator": "./bin/index.js"
+  },
+  "scripts": {
+    "test": "node test/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://gitee.com/kohai/kohapi-generator.git"
+  },
+  "keywords": [
+    "kohapi",
+    "code-generate",
+    "yapi"
+  ],
+  "author": {
+    "name": "kohai",
+    "email": "i@kohai.top"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "pluralize": "^8.0.0"
+  },
+  "files": [
+    "index.js",
+    "bin",
+    "src",
+    "test"
+  ]
+}
