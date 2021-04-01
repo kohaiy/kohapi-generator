@@ -1,13 +1,14 @@
 {
   "name": "@kohapi/generator",
-  "version": "0.0.1-alpha.3",
+  "version": "0.0.1-alpha.4",
   "description": "A auto code generator.",
   "main": "index.js",
   "bin": {
     "kohapi-generator": "./bin/index.js"
   },
   "scripts": {
-    "test": "node test/index.js"
+    "test:yapi-client-ts": "node test/yapi-client-ts.js",
+    "test:yapi-hapi-ts": "node test/yapi-hapi-ts.js"
   },
   "repository": {
     "type": "git",

@@ -6,28 +6,40 @@ interface ReqParam {
   body?: any;
 }
 
-async function mapRes<T>(promise: Promise<AxiosResponse<T>>): Promise<{ data?: T; error?: { code: number; msg: string } }> {
+interface Handlers {
+  beforeRequest?: Function;
+  afterRequest?: Function;
+  afterError?: Function;
+}
+
+async function mapRes<T>(promise: Promise<AxiosResponse<T>>, handlers?: Handlers): Promise<{ data?: T; error?: { statusCode: number; message: string } }> {
   try {
+    if (handlers && handlers.beforeRequest) {
+      handlers.beforeRequest();
+    }
     const res = await promise;
     const { data } = res;
+    if (handlers && handlers.afterRequest) {
+      handlers.beforeRequest({ data });
+    }
     return { data };
   } catch (e) {
+    let error = {
+      statusCode: -1,
+      message: e.message,
+    };
     if (e.response) {
       const response = e.response as AxiosResponse;
-      console.error(response.data.msg);
-      if (response.status === 401) {
-        // router.replace({
-        //     name: 'Login',
-        // });
-      }
-      return { error: response.data };
+      error = response.data;
     }
-
+    if (handlers && handlers.afterRequest) {
+      handlers.beforeRequest({ error });
+    }
+    if (handlers && handlers.afterError) {
+      handlers.afterError({ error });
+    }
     return {
-      error: {
-        code: -1,
-        msg: e.message,
-      },
+      error,
     };
   }
 }
@@ -52,6 +64,7 @@ function replacePath(path: string, params?: Record<string, any>) {
 
 export default class ApiClient {
   private static instance: AxiosInstance | null = null;
+  private static handlers: Handlers = {};
 
   private constructor() {
     console.log('ApiClient Created.');
@@ -61,18 +74,19 @@ export default class ApiClient {
     this.instance = instance;
   }
 
+  static beforeRequest(handler: () => void) {
+    this.handlers.beforeRequest = handler;
+  }
+  static afterRequest(handler: (payload: { data?: any; error?: any }) => void) {
+    this.handlers.afterRequest = handler;
+  }
+  static afterError(handler: (error?: any) => void) {
+    this.handlers.afterError = handler;
+  }
+
   static getInstance() {
     if (!this.instance) {
-      this.instance = axios.create({
-        baseURL: '/api',
-      });
-      this.instance.interceptors.request.use((config: AxiosRequestConfig) => {
-        if (localStorage.getItem('token')) {
-          config.headers = config.headers || {};
-          config.headers.authorization = localStorage.getItem('token');
-        }
-        return config;
-      });
+      this.instance = axios.create();
     }
     return this.instance;
   }

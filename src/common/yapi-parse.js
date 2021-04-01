@@ -10,7 +10,13 @@ function getOperationId(method, path) {
     return method.toLowerCase() + toCamelCase(path);
 }
 
-function transType(originType) {
+function transType(field) {
+    let originType = field.type;
+    if (originType === 'string' && field.mock) {
+        if (field.mock.mock === '@datetime') {
+            originType = 'date';
+        }
+    }
     const mapper = {
         integer: 'number',
         date: 'Date',
@@ -48,7 +54,7 @@ function transForm(form, name = '') {
             name,
             form.map((field) => ({
                 name: field.name,
-                type: transType(field.type),
+                type: transType(field),
                 required: field.required,
             })),
         );
@@ -57,7 +63,7 @@ function transForm(form, name = '') {
         // TODO 基本类型
         const [field] = form;
         data.name = field.name;
-        data.type = transType(field.type);
+        data.type = transType(field);
         data.required = field.required;
     } else {
         data.isEmpty = true;
@@ -97,7 +103,7 @@ function formatJson(json, name, interfaces) {
         const itemType = formatJson(json.items, pluralize.singular(name), interfaces);
         return `${itemType}[]`;
     } else {
-        return transType(json.type);
+        return transType(json);
     }
 }
 
@@ -120,6 +126,14 @@ class YapiParse {
 
     getInfo() {
         return this.info;
+    }
+
+    hasAuthorization() {
+        if (this.info.req_headers &&
+            this.info.req_headers.find(({ name, value }) => name === 'Authorization' && value === 'none')) {
+            return false;
+        }
+        return true;
     }
 
     getReqParams() {

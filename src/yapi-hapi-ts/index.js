@@ -12,14 +12,10 @@ function getConfig() {
     return _config;
 }
 
+
 async function getApiParse(api, yapiApi) {
     const info = await yapiApi.getApiDetail(api._id);
     return new YapiParse(info);
-    // console.log('operationId ->', yapiParse.operationId);
-    // console.log('getReqParams ->', yapiParse.getReqParams());
-    // console.log('getReqQuery ->', yapiParse.getReqQuery());
-    // console.log('getReqBody ->', yapiParse.getReqBody());
-    // console.log('getResBody ->', yapiParse.getResBody());
 }
 
 async function generateCat(cat, yapiApi, fileGenerator) {
@@ -39,17 +35,7 @@ async function generate() {
     fileGenerator.init();
     // fileGenerator.generateCats(cats);
     cats.forEach(cat => generateCat(cat, yapiApi, fileGenerator));
-    fileGenerator.copyApiClient();
-    // const info = await yapiApi.getApiDetail(19);
-
-    // console.log(info);
-    // const yapiParse = new YapiParse(info);
-    // console.log('operationId ->', yapiParse.operationId);
-    // console.log('getReqParams ->', yapiParse.getReqParams());
-    // console.log('getReqQuery ->', yapiParse.getReqQuery());
-    // console.log('getReqBody ->', yapiParse.getReqBody());
-    // console.log('getResBody ->', yapiParse.getResBody());
-    // console.log(getConfig());
+    // fileGenerator.copyApiClient();
 }
 
 module.exports = generate;

@@ -1,6 +1,9 @@
 const fs = require('fs');
 const sysPath = require('path');
-const { toSnakeCase, toCamelCase } = require('./utils');
+const {
+    toSnakeCase,
+    toCamelCase
+} = require('../common/utils');
 
 function mkDir(path) {
     if (fs.existsSync(path)) {
