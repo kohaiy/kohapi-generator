@@ -69,7 +69,7 @@ class FileGenerator {
             const reqBodyTpl = [];
             if (reqParams && !reqParams.isEmpty) {
                 const paramsName = reqParams.name || 'params';
-                paramsTpl.push(`${paramsName}${reqParams.required ? '' : '?'}: ${reqParams.type}`);
+                paramsTpl.push(`${paramsName}: ${reqParams.type}`);
                 reqBodyTpl.push(reqParams.name ? `params: { ${paramsName} }` : 'params');
             }
             if (reqQuery && !reqQuery.isEmpty) {

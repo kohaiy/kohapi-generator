@@ -8,6 +8,7 @@ function getConfig() {
     if (_config) return _config;
     const allConfig = require(path.join(path.resolve(), 'kohapi.config.js'));
     _config = allConfig.yapi;
+    _config.filter = _config.filter || (() => true);
     _config.output = allConfig.output;
     return _config;
 }
@@ -23,11 +24,15 @@ async function getApiParse(api, yapiApi) {
 }
 
 async function generateCat(cat, yapiApi, fileGenerator) {
-    const { list } = await yapiApi.getApisByCat(cat._id);
+    const filter = getConfig().filter;
+    let { list } = await yapiApi.getApisByCat(cat._id);
+    list = list.filter((api) => filter({ name: cat.name, _id: cat._id }, api));
     const apiParses = await Promise.all(
         list.map(api => getApiParse(api, yapiApi)),
     );
-    fileGenerator.generateCat(cat, apiParses);
+    if (list.length) {
+        fileGenerator.generateCat(cat, apiParses);
+    }
 }
 
 async function generate() {

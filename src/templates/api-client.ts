@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosResponse, AxiosRequestConfig } from 'axios';
+import axios, { AxiosInstance, AxiosResponse } from 'axios';
 
 interface ReqParam {
   params?: Record<string, any>;
@@ -6,21 +6,25 @@ interface ReqParam {
   body?: any;
 }
 
-interface Handlers {
-  beforeRequest?: Function;
-  afterRequest?: Function;
-  afterError?: Function;
+interface ErrorMessage {
+  statusCode: number; message: string;
 }
 
-async function mapRes<T>(promise: Promise<AxiosResponse<T>>, handlers?: Handlers): Promise<{ data?: T; error?: { statusCode: number; message: string } }> {
+interface Handlers {
+  beforeRequest?: () => void;
+  afterRequest?: (parmas: { data?: any; error?: ErrorMessage }) => void;
+  afterError?: (error: ErrorMessage) => void;
+}
+
+async function mapRes<T>(promise: Promise<AxiosResponse<T>>, handlers?: Handlers): Promise<{ data?: T; error?: ErrorMessage }> {
   try {
-    if (handlers && handlers.beforeRequest) {
+    if (handlers?.beforeRequest) {
       handlers.beforeRequest();
     }
     const res = await promise;
     const { data } = res;
-    if (handlers && handlers.afterRequest) {
-      handlers.beforeRequest({ data });
+    if (handlers?.afterRequest) {
+      handlers.afterRequest({ data });
     }
     return { data };
   } catch (e) {
@@ -32,11 +36,11 @@ async function mapRes<T>(promise: Promise<AxiosResponse<T>>, handlers?: Handlers
       const response = e.response as AxiosResponse;
       error = response.data;
     }
-    if (handlers && handlers.afterRequest) {
-      handlers.beforeRequest({ error });
+    if (handlers?.afterRequest) {
+      handlers.afterRequest({ error });
     }
-    if (handlers && handlers.afterError) {
-      handlers.afterError({ error });
+    if (handlers?.afterError) {
+      handlers.afterError(error);
     }
     return {
       error,
@@ -64,6 +68,7 @@ function replacePath(path: string, params?: Record<string, any>) {
 
 export default class ApiClient {
   private static instance: AxiosInstance | null = null;
+
   private static handlers: Handlers = {};
 
   private constructor() {
@@ -77,9 +82,11 @@ export default class ApiClient {
   static beforeRequest(handler: () => void) {
     this.handlers.beforeRequest = handler;
   }
+
   static afterRequest(handler: (payload: { data?: any; error?: any }) => void) {
     this.handlers.afterRequest = handler;
   }
+
   static afterError(handler: (error?: any) => void) {
     this.handlers.afterError = handler;
   }
@@ -97,7 +104,7 @@ export default class ApiClient {
       {
         params: reqParam.query,
       },
-    ));
+    ), this.handlers);
   }
 
   static httpPost<T>(path: string, reqParam: ReqParam) {
@@ -107,7 +114,7 @@ export default class ApiClient {
       {
         params: reqParam.query,
       },
-    ));
+    ), this.handlers);
   }
 
   static httpPut<T>(path: string, reqParam: ReqParam) {
@@ -117,7 +124,7 @@ export default class ApiClient {
       {
         params: reqParam.query,
       },
-    ));
+    ), this.handlers);
   }
 
   static httpPatch<T>(path: string, reqParam: ReqParam) {
@@ -127,15 +134,15 @@ export default class ApiClient {
       {
         params: reqParam.query,
       },
-    ));
+    ), this.handlers);
   }
 
-  static httpDel<T>(path: string, reqParam: ReqParam) {
+  static httpDelete<T>(path: string, reqParam: ReqParam) {
     return mapRes<T>(this.getInstance().delete(
       replacePath(path, reqParam.params),
       {
         params: reqParam.query,
       },
-    ));
+    ), this.handlers);
   }
 }

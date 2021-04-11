@@ -22,5 +22,8 @@ kohapi-generator init
 # 生成 yapi 对应的前端文件
 kohapi-generator yapi-client-ts
 
+# 生成 yapi 对应的 hapi 文件
+kohapi-generator yapi-hapi-ts
+
 # 其他待开发
 ```
