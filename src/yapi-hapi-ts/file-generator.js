@@ -75,7 +75,7 @@ class FileGenerator {
                 operationId,
             });
             const info = apiParse.getInfo();
-            console.log(`[*] ${info.method} ${info.path}  \t${info.title}`);
+            console.log(`[*] ${info.method} \t${info.path}  \t${info.title}`);
             const hasAuthorization = apiParse.hasAuthorization();
             const reqParams = apiParse.getReqParams();
             const reqQuery = apiParse.getReqQuery();
@@ -177,9 +177,21 @@ export default defineOptionalRoute({
             mkDir(sysPath.join(modulePath, filename));
             fs.writeFileSync(sysPath.join(modulePath, `${filename}/default.ts`), apiContent, { encoding: 'utf-8' });
 
-            if (!fs.existsSync(sysPath.join(modulePath, `${filename}/optional.ts`))) {
-                fs.writeFileSync(sysPath.join(modulePath, `${filename}/optional.ts`), optionalContent, { encoding: 'utf-8' });
-            }
+            const optionalFilePath = sysPath.join(modulePath, `${filename}/optional.ts`);
+
+            const generateOptionalFile = () => {
+                if (fs.existsSync(optionalFilePath)) {
+                    const { mtimeMs, birthtimeMs } = fs.statSync(optionalFilePath);
+                    if (Math.round((mtimeMs - birthtimeMs) / 1000) > 0) {
+                        console.warn('    -- optional.ts 已编辑，不更新');
+                        return;
+                    }
+                    fs.unlinkSync(optionalFilePath);
+                }
+                fs.writeFileSync(optionalFilePath, optionalContent, { encoding: 'utf-8' });
+            };
+            generateOptionalFile();
+
         });
         //         const moduleContent = `/**
         //  * module name: ${cat.name}

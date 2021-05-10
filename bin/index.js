@@ -5,6 +5,9 @@ const { yapiClientTsGenerate, yapiHapiGenerate } = require('../index');
 
 const cmd = process.argv[2];
 
+const ci = process.argv.indexOf('-c');
+const configPath = ci > 0 ? process.argv[ci + 1] : undefined;
+
 const log = (info) => {
     console.log('[kohapi-generator]', info);
 }
@@ -26,9 +29,9 @@ if (!cmd) {
     );
     log(`File \`${configPath}\` generated. Please update your config before use it.`);
 } else if (cmd === 'yapi-client-ts') {
-    yapiClientTsGenerate();
+    yapiClientTsGenerate({ configPath });
 } else if (cmd === 'yapi-hapi-ts') {
-    yapiHapiGenerate();
+    yapiHapiGenerate({ configPath });
 } else {
     log(`Command \`${cmd}\` not exists.`);
 }

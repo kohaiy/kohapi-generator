@@ -4,9 +4,9 @@ const YapiParse = require('../common/yapi-parse');
 const FileGenerator = require('./file-generator');
 
 let _config = null;
-function getConfig() {
+function getConfig(configPath) {
     if (_config) return _config;
-    const allConfig = require(path.join(path.resolve(), 'kohapi.config.js'));
+    const allConfig = require(path.join(path.resolve(), configPath || 'kohapi.config.js'));
     _config = allConfig.yapi;
     _config.filter = _config.filter || (() => true);
     _config.output = allConfig.output;
@@ -35,8 +35,8 @@ async function generateCat(cat, yapiApi, fileGenerator) {
     }
 }
 
-async function generate() {
-    const yapiApi = new YapiApi(getConfig());
+async function generate({ configPath } = {}) {
+    const yapiApi = new YapiApi(getConfig(configPath));
     const cats = await yapiApi.getCatMenu();
     const fileGenerator = new FileGenerator({
         output: getConfig().output,

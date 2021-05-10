@@ -25,5 +25,8 @@ kohapi-generator yapi-client-ts
 # 生成 yapi 对应的 hapi 文件
 kohapi-generator yapi-hapi-ts
 
+# 指定配置文件名称，路径相对于项目根目录
+kohapi-generator yapi-client-ts -c ./config/kohapi.config.js
+
 # 其他待开发
 ```
