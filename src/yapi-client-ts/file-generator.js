@@ -103,10 +103,14 @@ export { default as ${operationId} } from './${filename}';`).join('')}
         fs.writeFileSync(sysPath.join(modulePath, 'index.ts'), moduleContent, { encoding: 'utf-8' });
     }
 
-    copyApiClient() {
+    copyApiClient({ ignoreApiClientFile = false }) {
+        const dest = sysPath.join(this.outputPath, 'api-client.ts');
+        if (ignoreApiClientFile && fs.existsSync(dest)) {
+            return;
+        }
         fs.copyFileSync(
             sysPath.join(__dirname, '../templates/api-client.ts'),
-            sysPath.join(this.outputPath, 'api-client.ts'),
+            dest,
         );
     }
 }

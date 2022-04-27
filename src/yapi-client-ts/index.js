@@ -10,6 +10,7 @@ function getConfig(configPath) {
     _config = allConfig.yapi;
     _config.filter = _config.filter || (() => true);
     _config.output = allConfig.output;
+    _config.ignoreApiClientFile = allConfig.ignoreApiClientFile || false;
     return _config;
 }
 
@@ -36,7 +37,8 @@ async function generateCat(cat, yapiApi, fileGenerator) {
 }
 
 async function generate({ configPath } = {}) {
-    const yapiApi = new YapiApi(getConfig(configPath));
+    const config = getConfig(configPath);
+    const yapiApi = new YapiApi(config);
     const cats = await yapiApi.getCatMenu();
     const fileGenerator = new FileGenerator({
         output: getConfig().output,
@@ -44,7 +46,7 @@ async function generate({ configPath } = {}) {
     fileGenerator.init();
     // fileGenerator.generateCats(cats);
     cats.forEach(cat => generateCat(cat, yapiApi, fileGenerator));
-    fileGenerator.copyApiClient();
+    fileGenerator.copyApiClient({ ignoreApiClientFile: config.ignoreApiClientFile });
     // const info = await yapiApi.getApiDetail(19);
 
     // console.log(info);
