@@ -115,7 +115,8 @@ class FileGenerator {
                         vos += `
 const ${it.name}Vo = Joi.object({${it.fields.map(f => `
     ${f.name}: ${transJoiType(f.type, f)}`).join(',')}
-});`;
+}).label('${it.name}Vo');
+`;
                     })
                 } else {
                     paramsTpl.push(`
@@ -128,7 +129,8 @@ const ${it.name}Vo = Joi.object({${it.fields.map(f => `
                     vos += `
 const ${it.name}Vo = Joi.object({${it.fields.map(f => `
     ${f.name}: ${transJoiType(f.type, f)}`).join(',')}
-});`;
+}).label('${it.name}Vo');
+`;
                 })
             }
             const apiContent = `/**
@@ -146,7 +148,12 @@ export default defineRoute({
     method: '${info.method}',
     path: '${info.path}',
     options: {${hasAuthorization ? '' : `
-        auth: false,`}
+        auth: false,
+        plugins: {
+            'hapi-swagger': {
+                security: [],
+            },
+        },`}
         tags: ['api', '${moduleName}'],
         validate: {${paramsTpl.join(`,`)}
         },
@@ -181,12 +188,13 @@ export default defineOptionalRoute({
 
             const generateOptionalFile = () => {
                 if (fs.existsSync(optionalFilePath)) {
-                    const { mtimeMs, birthtimeMs } = fs.statSync(optionalFilePath);
-                    if (Math.round((mtimeMs - birthtimeMs) / 1000) > 0) {
-                        console.warn('    -- optional.ts 已编辑，不更新');
-                        return;
-                    }
-                    fs.unlinkSync(optionalFilePath);
+                    // const { mtimeMs, birthtimeMs } = fs.statSync(optionalFilePath);
+                    // if (Math.round((mtimeMs - birthtimeMs) / 1000) > 0) {
+                    //     console.warn('    -- optional.ts 已编辑，不更新');
+                    //     return;
+                    // }
+                    // fs.unlinkSync(optionalFilePath);
+                    return;
                 }
                 fs.writeFileSync(optionalFilePath, optionalContent, { encoding: 'utf-8' });
             };

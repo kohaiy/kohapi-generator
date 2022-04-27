@@ -89,7 +89,7 @@ class FileGenerator {
  */
 import ApiClient from '../../api-client';
 ${interfaces}
-export default function (${paramsTpl.join(', ')}) {
+export default function ${operationId}(${paramsTpl.join(', ')}) {
     return ApiClient.http${toCamelCase(info.method)}<${resBody.type}>('${info.path}', { ${reqBodyTpl.join(', ')} });
 };`;
             fs.writeFileSync(sysPath.join(modulePath, `${filename}.ts`), apiContent, { encoding: 'utf-8' });

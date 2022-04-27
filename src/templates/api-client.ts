@@ -1,3 +1,4 @@
+// @ts-nocheck
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 
 interface ReqParam {

@@ -1,6 +1,6 @@
 {
   "name": "@kohapi/generator",
-  "version": "0.0.1-alpha.9",
+  "version": "0.0.1-alpha.12",
   "description": "A auto code generator.",
   "main": "index.js",
   "bin": {
