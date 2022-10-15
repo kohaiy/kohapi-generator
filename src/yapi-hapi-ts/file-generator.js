@@ -154,6 +154,7 @@ export default defineRoute({
                 security: [],
             },
         },`}
+        description: '${info.title}',
         tags: ['api', '${moduleName}'],
         validate: {${paramsTpl.join(`,`)}
         },
@@ -178,6 +179,7 @@ import { defineOptionalRoute } from '@/helpers/route';
 export default defineOptionalRoute({
     handler: (req) => {
         // TODO Enter your code here ...
+        throw new Error('TODO: ${info.title}');
     },
 });
 `;
